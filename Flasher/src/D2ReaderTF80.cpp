@@ -4,16 +4,15 @@
 #include <common/protocols/D2Request.hpp>
 #include <common/protocols/D2Messages.hpp>
 #include <common/Util.hpp>
-#include <j2534/J2534.hpp>
 
 #define LOG_MODULE_NAME "flasher"
 #include <common/LogHelper.hpp>
 
 namespace flasher {
 
-D2ReaderTF80::D2ReaderTF80(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+D2ReaderTF80::D2ReaderTF80(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                            ReadRanges ranges)
-    : ReaderBase{ j2534, carPlatform, ecuId, ranges }
+    : ReaderBase{ channelProvider, carPlatform, ecuId, ranges }
 {
 }
 

@@ -4,7 +4,7 @@
 
 #include <common/CarPlatform.hpp>
 #include <common/ConfigurationInfo.hpp>
-#include <common/J2534ChannelProvider.hpp>
+#include <common/ICanChannelProvider.hpp>
 
 #include <chrono>
 #include <condition_variable>
@@ -23,7 +23,7 @@ namespace logger {
 
 	class Logger final {
 	public:
-        explicit Logger(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId, const std::string& cmInfo);
+        explicit Logger(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId, const std::string& cmInfo);
 		~Logger();
 
 		void registerCallback(LoggerCallback& callback);
@@ -52,7 +52,7 @@ namespace logger {
 		void callbackFunction();
 
 	private:
-        common::J2534ChannelProvider _j2534ChannelProvider;
+        std::shared_ptr<common::ICanChannelProvider> _channelProvider;
 		common::CarPlatform _carPlatform;
         uint32_t _ecuId;
 		std::string _cmInfo;

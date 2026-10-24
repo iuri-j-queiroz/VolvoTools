@@ -8,7 +8,7 @@ namespace flasher {
 
 class UDSReaderMemory : public ReaderBase {
 public:
-    UDSReaderMemory(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+    UDSReaderMemory(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
               ReadRanges ranges);
 
 protected:

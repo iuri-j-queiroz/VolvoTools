@@ -1,9 +1,9 @@
 [submodule "Registry"]
 	path = Registry
-	url = git@github.com:prometey1982/Registry.git
+	url = https://github.com/prometey1982/Registry.git
 [submodule "j2534"]
 	path = j2534
-	url = git@github.com:prometey1982/J2534.git
+	url = https://github.com/prometey1982/J2534.git
 [submodule "libintelhex"]
 	path = libintelhex
-	url = git@github.com:prometey1982/libintelhex.git
+	url = https://github.com/prometey1982/libintelhex.git

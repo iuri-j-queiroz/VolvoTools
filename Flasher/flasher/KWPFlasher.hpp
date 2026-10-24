@@ -13,7 +13,7 @@ namespace flasher {
 
     class KWPFlasher: public FlasherBase {
     public:
-        KWPFlasher(j2534::J2534& j2534,
+        KWPFlasher(std::shared_ptr<common::ICanChannelProvider> channelProvider,
             common::CarPlatform carPlatform, uint32_t ecuId,
             KWPFlasherConfig&& config);
         ~KWPFlasher();

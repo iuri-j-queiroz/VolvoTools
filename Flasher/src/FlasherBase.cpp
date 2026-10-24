@@ -1,8 +1,6 @@
 #include "flasher/FlasherBase.hpp"
 
 #include <common/ICanChannel.hpp>
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #define LOG_MODULE_NAME "flasher"
 #include <common/LogHelper.hpp>
@@ -19,8 +17,8 @@ size_t FlasherBase::getProgressFromVBF(const common::VBF& vbf)
                            });
 }
 
-FlasherBase::FlasherBase(j2534::J2534 &j2534, common::CarPlatform carPlatform, uint32_t ecuId)
-    : _j2534ChannelProvider{ j2534, carPlatform }
+FlasherBase::FlasherBase(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId)
+    : _channelProvider{ std::move(channelProvider) }
     , _carPlatform{ carPlatform }
     , _ecuId{ ecuId }
     , _currentProgress{ 0 }
@@ -61,7 +59,7 @@ void FlasherBase::start()
     _flasherThread = std::thread([this]() {
         LOG_SCOPE_DURATION(FlasherBase_start);
         try {
-            auto channels{_j2534ChannelProvider.getAllChannels(_ecuId)};
+            auto channels{_channelProvider->getAllChannels(_ecuId)};
             startImpl(channels);
         }
         catch(...) {

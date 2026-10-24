@@ -24,6 +24,7 @@ common::VBF SBLProviderCommon::getSBL(common::CarPlatform carPlatform, uint32_t 
     common::VBFParser parser;
     switch(carPlatform) {
     case common::CarPlatform::P1:
+    case common::CarPlatform::P1_UDS:
     case common::CarPlatform::P2:
     case common::CarPlatform::P2_250:
         if(ecuId == to_underlying(common::D2ECUType::ECM_ME)) {

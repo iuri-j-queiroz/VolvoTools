@@ -17,7 +17,7 @@
 namespace flasher {
 
 std::unique_ptr<ReaderBase> MemoryReaderFactory::create(
-    j2534::J2534& j2534,
+    std::shared_ptr<common::ICanChannelProvider> channelProvider,
     const ReaderParametersProviderBase& p)
 {
     const auto platform = p.getCarPlatform();
@@ -27,22 +27,22 @@ std::unique_ptr<ReaderBase> MemoryReaderFactory::create(
 
     if(isD2Platform(platform)) {
         if (ecuId == to_underlying(common::D2ECUType::ECM_ME)) {
-            return std::make_unique<D2ReaderME7Memory>(j2534, platform, ecuId, ranges);
+            return std::make_unique<D2ReaderME7Memory>(channelProvider, platform, ecuId, ranges);
         }
         else if (ecuId == to_underlying(common::D2ECUType::TCM)) {
             if (cmInfo == "aw55_p2")
-                return std::make_unique<D2ReaderAW55>(j2534, platform, ecuId, ranges);
+                return std::make_unique<D2ReaderAW55>(channelProvider, platform, ecuId, ranges);
             if (cmInfo == "tf80_p2")
-                return std::make_unique<D2ReaderTF80>(j2534, platform, ecuId, ranges);
+                return std::make_unique<D2ReaderTF80>(channelProvider, platform, ecuId, ranges);
         }
         else if (ecuId == to_underlying(common::D2ECUType::DEM)) {
-            return std::make_unique<D2ReaderME7Memory>(j2534, platform, ecuId, ranges);
+            return std::make_unique<D2ReaderME7Memory>(channelProvider, platform, ecuId, ranges);
         }
     }
 
     // UDS
     if (isUDSPlatform(platform)) {
-        return std::make_unique<UDSReaderMemory>(j2534, platform, ecuId, ranges);
+        return std::make_unique<UDSReaderMemory>(channelProvider, platform, ecuId, ranges);
     }
 
     throw std::runtime_error("Unsupported platform/ECU for reading");

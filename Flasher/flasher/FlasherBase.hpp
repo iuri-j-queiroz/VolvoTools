@@ -3,10 +3,12 @@
 #include "FlasherState.hpp"
 #include "FlasherCallbackHolder.hpp"
 
-#include <common/J2534ChannelProvider.hpp>
+#include <common/ICanChannelProvider.hpp>
+#include <common/CarPlatform.hpp>
 #include <common/VBF.hpp>
 
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -15,17 +17,13 @@ namespace common {
 class ICanChannel;
 } // namespace common
 
-namespace j2534 {
-class J2534;
-} // namespace j2534
-
 namespace flasher {
 
 class FlasherBase: public FlasherCallbackHolder {
 public:
     static size_t getProgressFromVBF(const common::VBF& vbf);
 
-    FlasherBase(j2534::J2534 &j2534, common::CarPlatform carPlatform, uint32_t ecuId);
+    FlasherBase(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId);
     virtual ~FlasherBase();
 
     FlasherState getCurrentState() const;
@@ -51,7 +49,7 @@ protected:
     const uint32_t _ecuId;
 
 private:
-    common::J2534ChannelProvider _j2534ChannelProvider;
+    std::shared_ptr<common::ICanChannelProvider> _channelProvider;
     mutable std::mutex _mutex;
     size_t _currentProgress;
     size_t _maximumProgress;

@@ -2,7 +2,6 @@
 
 #include "common/ICanChannel.hpp"
 #include "common/CanIdProvider.hpp"
-#include "common/J2534ChannelProvider.hpp"
 
 #include <chrono>
 #include <memory>

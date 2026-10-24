@@ -12,8 +12,6 @@
 #include <common/protocols/UDSProtocolCommonSteps.hpp>
 #include <common/Util.hpp>
 #include <common/utility.hpp>
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #define LOG_MODULE_NAME "logger"
 #include <common/LogHelper.hpp>
@@ -447,6 +445,7 @@ namespace logger {
 		using common::CarPlatform;
         if (cmId == to_underlying(common::D2ECUType::ECM_ME)
             && (carPlatform == CarPlatform::P80 || carPlatform == CarPlatform::P1
+			|| carPlatform == CarPlatform::P1_UDS
 			|| carPlatform == CarPlatform::P2 || carPlatform == CarPlatform::P2_250)) {
             return std::make_unique<D2LoggerImpl>();
 		}
@@ -480,6 +479,7 @@ namespace logger {
 		switch (carPlatform)
 		{
 		case common::CarPlatform::P1:
+		case common::CarPlatform::P1_UDS:
 		case common::CarPlatform::P2:
 		case common::CarPlatform::P2_250:
 		case common::CarPlatform::P80:
@@ -493,8 +493,8 @@ namespace logger {
 		}
 	}
 
-    Logger::Logger(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId, const std::string& cmInfo)
-        : _j2534ChannelProvider{ j2534, carPlatform }
+    Logger::Logger(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId, const std::string& cmInfo)
+        : _channelProvider{ std::move(channelProvider) }
 		, _carPlatform{ carPlatform }
         , _ecuId{ ecuId }
 		, _cmInfo{ cmInfo }
@@ -563,7 +563,7 @@ namespace logger {
 	}
 
 	void Logger::registerParameters() {
-        auto channel{_j2534ChannelProvider.getChannelForEcu(_ecuId)};
+        auto channel{_channelProvider->getChannelForEcu(_ecuId)};
         _loggerImpl->registerParameters(*channel, _parameters);
 	}
 
@@ -577,7 +577,7 @@ namespace logger {
 		}
         const size_t maxErrorCount = 10;
         size_t errorCount = 0;
-        auto channel{_j2534ChannelProvider.getChannelForEcu(_ecuId)};
+        auto channel{_channelProvider->getChannelForEcu(_ecuId)};
         const auto startTimepoint{ std::chrono::steady_clock::now() };
         for (size_t timeoffset = 0; errorCount < maxErrorCount; timeoffset += 50) {
 			{

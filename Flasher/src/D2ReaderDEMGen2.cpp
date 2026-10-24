@@ -7,8 +7,6 @@
 #include <common/protocols/D2Message.hpp>
 #include <common/protocols/D2Messages.hpp>
 #include <common/protocols/D2ProtocolCommonSteps.hpp>
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #define LOG_MODULE_NAME "flasher"
 #include <common/LogHelper.hpp>
@@ -34,9 +32,9 @@ common::CanFrame writeMessagesAndReadMessage(common::ICanChannel& channel,
 
 namespace flasher {
 
-D2ReaderDEMGen2::D2ReaderDEMGen2(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+D2ReaderDEMGen2::D2ReaderDEMGen2(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                          ReadRanges ranges, common::VBF bootloader)
-    : ReaderBase{ j2534, carPlatform, ecuId, std::move(ranges) }
+    : ReaderBase{ channelProvider, carPlatform, ecuId, std::move(ranges) }
     , _bootloader{ std::move(bootloader) }
 {
 }

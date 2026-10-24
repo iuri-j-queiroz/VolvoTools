@@ -4,16 +4,14 @@
 
 #include <common/SBL.hpp>
 #include <common/VBFParser.hpp>
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #include <numeric>
 
 namespace flasher {
 
-D2Flasher::D2Flasher(j2534::J2534 &j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+D2Flasher::D2Flasher(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                       D2FlasherConfig&& config)
-    : D2FlasherBase{ j2534, carPlatform, ecuId, std::move(config) }
+    : D2FlasherBase{ channelProvider, carPlatform, ecuId, std::move(config) }
 {
 }
 

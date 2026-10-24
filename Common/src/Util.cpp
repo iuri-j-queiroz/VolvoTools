@@ -7,9 +7,11 @@
 #include "common/protocols/UDSError.hpp"
 #include "common/ECUInfo.hpp"
 
+#ifndef VOLVOTOOLS_ANDROID
 #include <Registry/include/Registry.hpp>
 #include <j2534/J2534Channel.hpp>
 #include <j2534/J2534_v0404.h>
+#endif
 
 #include <yaml-cpp/yaml.h>
 
@@ -95,6 +97,7 @@ namespace common {
     std::string fromPlatformString(const std::string& str) { return str; }
 #endif
 
+#ifndef VOLVOTOOLS_ANDROID
     using namespace m4x1m1l14n::Registry;
 
     static bool processRegistry(const std::string& keyName,
@@ -158,7 +161,9 @@ namespace common {
 #endif
         return result;
     }
+#endif // VOLVOTOOLS_ANDROID
 
+#ifndef VOLVOTOOLS_ANDROID
     static PASSTHRU_MSG makePassThruMsg(unsigned long ProtocolID,
         unsigned long Flags,
         const std::vector<unsigned char>& data) {
@@ -299,6 +304,8 @@ namespace common {
         return {};
     }
 
+#endif // VOLVOTOOLS_ANDROID
+
     uint32_t makeUDSResponseCanId(uint32_t canId, bool isExtendedId) {
         if (!isExtendedId) {
             // 0x7E0 -> 0x7E8
@@ -312,6 +319,7 @@ namespace common {
         return prefix | (sa << 8) | ps;
     }
 
+#ifndef VOLVOTOOLS_ANDROID
     bool prepareUDSChannel(j2534::J2534Channel& channel, uint32_t canId, bool isExtendedId) {
         const uint32_t responseCanId = makeUDSResponseCanId(canId, isExtendedId);
         unsigned long msgId;
@@ -428,6 +436,8 @@ namespace common {
 
         return std::move(channel);
     }
+
+#endif // VOLVOTOOLS_ANDROID
 
     static bool readCheckAndGetImpl(
         ICanChannel& channel,
@@ -856,7 +866,11 @@ namespace common {
 
     std::array<uint8_t, 5> getPinArray(uint64_t pin)
     {
-        return { (pin >> 32) & 0xFF, (pin >> 24) & 0xFF, (pin >> 16) & 0xFF, (pin >> 8) & 0xFF, pin & 0xFF };
+        return { static_cast<uint8_t>((pin >> 32) & 0xFF),
+                 static_cast<uint8_t>((pin >> 24) & 0xFF),
+                 static_cast<uint8_t>((pin >> 16) & 0xFF),
+                 static_cast<uint8_t>((pin >> 8) & 0xFF),
+                 static_cast<uint8_t>(pin & 0xFF) };
     }
 
     void initLogger(const std::string& logFilename, bool enableConsole, bool debugMode)

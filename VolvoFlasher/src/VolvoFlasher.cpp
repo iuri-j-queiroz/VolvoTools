@@ -16,6 +16,7 @@
 #include <common/VBFUtil.hpp>
 #include <common/SBL.hpp>
 #include <common/Util.hpp>
+#include <common/J2534ChannelProvider.hpp>
 #include <common/utility.hpp>
 
 #include <j2534/J2534.hpp>
@@ -674,7 +675,8 @@ void doSomeStuff(std::unique_ptr<j2534::J2534> j2534, uint64_t pin)
         (pin >> 32) & 0xFF, (pin >> 24) & 0xFF, (pin >> 16) & 0xFF, (pin >> 8) & 0xFF, pin & 0xFF };
     flasher::KWPFlasherConfig config{
         {}, pinArray, flashVbf, common::CompressionType::Bosch };
-    flasher::KWPFlasher flasher{ *j2534, carPlatform, ecuId, std::move(config) };
+    auto channelProvider = std::make_shared<common::J2534ChannelProvider>(*j2534, carPlatform);
+    flasher::KWPFlasher flasher{ std::move(channelProvider), carPlatform, ecuId, std::move(config) };
 	FlasherCallback callback;
 	flasher.registerCallback(callback);
 	flasher.start();
@@ -715,7 +717,8 @@ void UDSFlash(common::CarPlatform carPlatform, uint8_t ecuId,
     std::array<uint8_t, 5> pinArray = {
         (pin >> 32) & 0xFF, (pin >> 24) & 0xFF, (pin >> 16) & 0xFF, (pin >> 8) & 0xFF, pin & 0xFF };
     flasher::UDSFlasherConfig config{ pinArray, bootloader, flash };
-    flasher::UDSFlasher flasher{ *j2534, carPlatform, ecuId, std::move(config) };
+    auto channelProvider = std::make_shared<common::J2534ChannelProvider>(*j2534, carPlatform);
+    flasher::UDSFlasher flasher{ std::move(channelProvider), carPlatform, ecuId, std::move(config) };
 	FlasherCallback callback;
 	flasher.registerCallback(callback);
 	flasher.start();
@@ -751,7 +754,8 @@ void D2Flash(const std::string& flashPath, std::unique_ptr<j2534::J2534> j2534, 
     const uint32_t ecuId = to_underlying(common::D2ECUType::ECM_ME);
 	flasher::SBLProviderCommon sblProviderCommon;
     flasher::D2FlasherConfig config{ sblProviderCommon.getSBL(carPlatform, ecuId, ""), vbf };
-    flasher::D2Flasher flasher(*j2534, carPlatform, ecuId, std::move(config));
+    auto channelProvider = std::make_shared<common::J2534ChannelProvider>(*j2534, carPlatform);
+    flasher::D2Flasher flasher(std::move(channelProvider), carPlatform, ecuId, std::move(config));
 	FlasherCallback callback;
 	flasher.registerCallback(callback);
     flasher.start();
@@ -808,7 +812,8 @@ void readFlash(std::unique_ptr<j2534::J2534> j2534, common::CarPlatform carPlatf
 
     auto provider = CLIReaderProvider(carPlatform, ecuId,
         static_cast<uint32_t>(start), static_cast<size_t>(datasize));
-    auto reader = flasher::ReaderFactory::create(*j2534, provider);
+    auto channelProvider = std::make_shared<common::J2534ChannelProvider>(*j2534, carPlatform);
+    auto reader = flasher::ReaderFactory::create(std::move(channelProvider), provider);
     FlasherCallback callback;
     reader->registerCallback(callback);
     reader->start();

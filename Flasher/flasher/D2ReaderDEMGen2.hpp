@@ -8,7 +8,7 @@ namespace flasher {
 
 class D2ReaderDEMGen2 : public ReaderBase {
 public:
-    D2ReaderDEMGen2(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+    D2ReaderDEMGen2(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                     ReadRanges ranges, common::VBF bootloader);
 
 protected:

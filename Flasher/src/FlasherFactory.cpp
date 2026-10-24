@@ -25,7 +25,7 @@ bool FlasherFactory::isUDSPlatform(common::CarPlatform p)
 }
 
 std::unique_ptr<FlasherBase> FlasherFactory::create(
-    j2534::J2534& j2534,
+    std::shared_ptr<common::ICanChannelProvider> channelProvider,
     const FlasherParametersProviderBase& p)
 {
     const auto platform = p.getCarPlatform();
@@ -37,7 +37,7 @@ std::unique_ptr<FlasherBase> FlasherFactory::create(
         auto bootloader = p.getBootloaderParams();
         if (!bootloader)
             throw std::runtime_error("D2 flasher requires bootloader");
-        return std::make_unique<D2Flasher>(j2534, platform, ecuId,
+        return std::make_unique<D2Flasher>(channelProvider, platform, ecuId,
             D2FlasherConfig{ bootloader->bootloader, flash });
     }
 
@@ -57,7 +57,7 @@ std::unique_ptr<FlasherBase> FlasherFactory::create(
                 static_cast<uint8_t>(auth->pin & 0xFF)
             };
         }
-        return std::make_unique<UDSFlasher>(j2534, platform, ecuId,
+        return std::make_unique<UDSFlasher>(channelProvider, platform, ecuId,
             UDSFlasherConfig{ pinArray, bootloader->bootloader, flash });
     }
 
@@ -75,7 +75,7 @@ std::unique_ptr<FlasherBase> FlasherFactory::create(
                 static_cast<uint8_t>(auth->pin & 0xFF)
             };
         }
-        return std::make_unique<UDSFlasher>(j2534, platform, ecuId,
+        return std::make_unique<UDSFlasher>(channelProvider, platform, ecuId,
             UDSFlasherConfig{ pinArray, {}, flash });
     }
 

@@ -1,5 +1,6 @@
 #include "LoggerApplication.hpp"
 
+#include <common/J2534ChannelProvider.hpp>
 #include <j2534/J2534.hpp>
 #include <logger/Logger.hpp>
 
@@ -17,7 +18,8 @@ void LoggerApplication::start(j2534::J2534 &j2534,
                               const common::CarPlatform carPlatform,
                               uint32_t cmId,
                               const std::vector<LoggerCallback *> &callbacks) {
-  _logger = std::make_unique<Logger>(j2534, carPlatform, cmId, std::string());
+  auto channelProvider = std::make_shared<common::J2534ChannelProvider>(j2534, carPlatform);
+  _logger = std::make_unique<Logger>(std::move(channelProvider), carPlatform, cmId, std::string());
   for (const auto &callback : callbacks) {
     _logger->registerCallback(*callback);
   }

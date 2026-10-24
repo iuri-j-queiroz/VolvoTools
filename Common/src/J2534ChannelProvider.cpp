@@ -79,6 +79,11 @@ j2534::J2534& J2534ChannelProvider::getJ2534() const
     return _j2534;
 }
 
+std::string J2534ChannelProvider::getDeviceInfo() const
+{
+    return "J2534";
+}
+
 std::vector<std::unique_ptr<ICanChannel>> J2534ChannelProvider::getAllChannels(uint32_t ecuId) const
 {
     std::vector<std::unique_ptr<ICanChannel>> result;

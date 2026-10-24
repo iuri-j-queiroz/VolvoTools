@@ -1,7 +1,5 @@
 #include "flasher/UDSFlasher.hpp"
 
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #include <common/CommonData.hpp>
 #include <common/CanIdProvider.hpp>
@@ -654,9 +652,9 @@ using M = hfsm2::MachineT<hfsm2::Config::ContextT<UDSFlasherImpl&>>;
         }
     };
 
-    UDSFlasher::UDSFlasher(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+    UDSFlasher::UDSFlasher(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                            UDSFlasherConfig&& config)
-        : FlasherBase{ j2534, carPlatform, ecuId }
+        : FlasherBase{ channelProvider, carPlatform, ecuId }
         , _config{ std::move(config) }
     {
     }

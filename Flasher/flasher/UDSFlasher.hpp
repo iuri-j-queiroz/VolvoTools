@@ -11,7 +11,7 @@ namespace flasher {
 
     class UDSFlasher: public FlasherBase {
     public:
-        UDSFlasher(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+        UDSFlasher(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                    UDSFlasherConfig&& config);
         ~UDSFlasher();
 

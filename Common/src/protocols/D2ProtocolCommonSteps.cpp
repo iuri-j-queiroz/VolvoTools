@@ -268,8 +268,12 @@ namespace {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         const auto now{std::chrono::system_clock::now()};
         const auto time_t = std::chrono::system_clock::to_time_t(now);
-        struct tm lt;
+        struct tm lt{};
+#ifdef _WIN32
         localtime_s(&lt, &time_t);
+#else
+        localtime_r(&time_t, &lt);
+#endif
 
         const auto msg = D2Messages::setCurrentTime(
             static_cast<uint8_t>(lt.tm_hour),

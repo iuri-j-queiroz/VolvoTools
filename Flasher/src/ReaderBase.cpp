@@ -1,8 +1,6 @@
 #include "flasher/ReaderBase.hpp"
 
 #include <common/ICanChannel.hpp>
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #define LOG_MODULE_NAME "flasher"
 #include <common/LogHelper.hpp>
@@ -11,8 +9,8 @@
 
 namespace flasher {
 
-ReaderBase::ReaderBase(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId, ReadRanges ranges)
-    : _channelProvider{ j2534, carPlatform }
+ReaderBase::ReaderBase(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId, ReadRanges ranges)
+    : _channelProvider{ std::move(channelProvider) }
     , _carPlatform{ carPlatform }
     , _ecuId{ ecuId }
     , _ranges{ ranges }
@@ -54,7 +52,7 @@ void ReaderBase::start()
     _readerThread = std::thread([this]() {
         try {
             LOG_SCOPE_DURATION(ReaderBase_start);
-            auto channels{ _channelProvider.getAllChannels(_ecuId) };
+            auto channels{ _channelProvider->getAllChannels(_ecuId) };
             startImpl(channels);
         }
         catch (...) {

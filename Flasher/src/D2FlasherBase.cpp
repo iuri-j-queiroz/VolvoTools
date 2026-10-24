@@ -6,8 +6,6 @@
 #include <common/protocols/D2ProtocolCommonSteps.hpp>
 #include <common/SBL.hpp>
 #include <common/VBFParser.hpp>
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #define LOG_MODULE_NAME "flasher"
 #include <common/LogHelper.hpp>
@@ -19,9 +17,9 @@ namespace flasher {
 
 // D2FlasherBase methods
 
-D2FlasherBase::D2FlasherBase(j2534::J2534 &j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+D2FlasherBase::D2FlasherBase(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                               D2FlasherConfig&& config)
-    : FlasherBase{ j2534, carPlatform, ecuId }
+    : FlasherBase{ channelProvider, carPlatform, ecuId }
     , _config{ std::move(config) }
 {
 }

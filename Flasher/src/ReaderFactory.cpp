@@ -20,7 +20,7 @@
 namespace flasher {
 
 std::unique_ptr<ReaderBase> ReaderFactory::create(
-    j2534::J2534& j2534,
+    std::shared_ptr<common::ICanChannelProvider> channelProvider,
     const ReaderParametersProviderBase& p)
 {
     const auto platform = p.getCarPlatform();
@@ -34,7 +34,7 @@ std::unique_ptr<ReaderBase> ReaderFactory::create(
             if(!bootloaderParams) {
                 throw std::runtime_error("ME7 reader requires bootloader");
             }
-            return std::make_unique<D2ReaderME7>(j2534, platform, ecuId, ranges, bootloaderParams->bootloader);
+            return std::make_unique<D2ReaderME7>(channelProvider, platform, ecuId, ranges, bootloaderParams->bootloader);
         }
         else if (ecuId == to_underlying(common::D2ECUType::DEM)) {
             const auto bootloaderParams = p.getBootloaderParams();
@@ -42,20 +42,20 @@ std::unique_ptr<ReaderBase> ReaderFactory::create(
                 throw std::runtime_error("DEM reader requires bootloader");
             }
             if(cmInfo == "gen2") {
-                return std::make_unique<D2ReaderDEMGen2>(j2534, platform, ecuId, ranges, bootloaderParams->bootloader);
+                return std::make_unique<D2ReaderDEMGen2>(channelProvider, platform, ecuId, ranges, bootloaderParams->bootloader);
             }
             else if(cmInfo == "gen3") {
-                return std::make_unique<D2ReaderDEMGen3>(j2534, platform, ecuId, ranges, bootloaderParams->bootloader);
+                return std::make_unique<D2ReaderDEMGen3>(channelProvider, platform, ecuId, ranges, bootloaderParams->bootloader);
             }
         }
         else if (ecuId == to_underlying(common::D2ECUType::TCM)) {
             if (cmInfo == "aw55_p2")
-                return std::make_unique<D2ReaderAW55>(j2534, platform, ecuId, ranges);
+                return std::make_unique<D2ReaderAW55>(channelProvider, platform, ecuId, ranges);
             if (cmInfo == "tf80_p2")
-                return std::make_unique<D2ReaderTF80>(j2534, platform, ecuId, ranges);
+                return std::make_unique<D2ReaderTF80>(channelProvider, platform, ecuId, ranges);
         }
 
-        return std::make_unique<D2ReaderChecksum>(j2534, platform, ecuId, ranges);
+        return std::make_unique<D2ReaderChecksum>(channelProvider, platform, ecuId, ranges);
     }
 
     // UDS
@@ -63,7 +63,7 @@ std::unique_ptr<ReaderBase> ReaderFactory::create(
         auto auth = p.getAuthParams();
         if (!auth)
             throw std::runtime_error("UDSReader requires PIN");
-        return std::make_unique<UDSReader>(j2534, platform, ecuId, ranges, auth->pin);
+        return std::make_unique<UDSReader>(channelProvider, platform, ecuId, ranges, auth->pin);
     }
 
     throw std::runtime_error("Unsupported platform/ECU for reading");

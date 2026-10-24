@@ -4,7 +4,8 @@
 #include "FlasherState.hpp"
 #include "ParamsTypes.hpp"
 
-#include <common/J2534ChannelProvider.hpp>
+#include <common/ICanChannelProvider.hpp>
+#include <common/CarPlatform.hpp>
 
 #include <functional>
 #include <memory>
@@ -16,15 +17,11 @@ namespace common {
 class ICanChannel;
 } // namespace common
 
-namespace j2534 {
-class J2534;
-} // namespace j2534
-
 namespace flasher {
 
 class ReaderBase: public FlasherCallbackHolder {
 public:
-    ReaderBase(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId, ReadRanges ranges);
+    ReaderBase(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId, ReadRanges ranges);
     virtual ~ReaderBase();
 
     FlasherState getCurrentState() const;
@@ -52,7 +49,7 @@ protected:
     const uint32_t _ecuId;
     const ReadRanges _ranges;
 
-    common::J2534ChannelProvider _channelProvider;
+    std::shared_ptr<common::ICanChannelProvider> _channelProvider;
     std::vector<std::vector<uint8_t>> _buffers;
 
 private:

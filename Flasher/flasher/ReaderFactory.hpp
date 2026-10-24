@@ -2,7 +2,7 @@
 
 #include "ReaderParametersProviderBase.hpp"
 
-#include <j2534/J2534.hpp>
+#include <common/ICanChannelProvider.hpp>
 
 #include <memory>
 
@@ -13,7 +13,7 @@ class ReaderBase;
 class ReaderFactory {
 public:
     static std::unique_ptr<ReaderBase> create(
-        j2534::J2534& j2534,
+        std::shared_ptr<common::ICanChannelProvider> channelProvider,
         const ReaderParametersProviderBase& params);
 };
 

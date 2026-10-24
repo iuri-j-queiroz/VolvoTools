@@ -2,8 +2,10 @@
 
 #include "CarPlatform.hpp"
 #include "ConfigurationInfo.hpp"
+#include "ICanChannelProvider.hpp"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace j2534 {
@@ -14,7 +16,7 @@ class J2534Channel;
 namespace common {
 class ICanChannel;
 
-class J2534ChannelProvider {
+class J2534ChannelProvider final : public ICanChannelProvider {
 public:
     J2534ChannelProvider(J2534ChannelProvider&&) = delete;
     J2534ChannelProvider(const J2534ChannelProvider&) = delete;
@@ -24,8 +26,10 @@ public:
     J2534ChannelProvider& operator=(const J2534ChannelProvider&) = delete;
 
     j2534::J2534& getJ2534() const;
-    std::vector<std::unique_ptr<ICanChannel>> getAllChannels(uint32_t ecuId = 0) const;
-    std::unique_ptr<ICanChannel> getChannelForEcu(uint32_t ecuId) const;
+    std::vector<std::unique_ptr<ICanChannel>> getAllChannels(uint32_t ecuId = 0) const override;
+    std::unique_ptr<ICanChannel> getChannelForEcu(uint32_t ecuId) const override;
+
+    std::string getDeviceInfo() const override;
 
 private:
     j2534::J2534& _j2534;

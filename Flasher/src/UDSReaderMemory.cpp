@@ -9,9 +9,9 @@
 
 namespace flasher {
 
-UDSReaderMemory::UDSReaderMemory(j2534::J2534& j2534, common::CarPlatform carPlatform, uint32_t ecuId,
+UDSReaderMemory::UDSReaderMemory(std::shared_ptr<common::ICanChannelProvider> channelProvider, common::CarPlatform carPlatform, uint32_t ecuId,
                                  ReadRanges ranges)
-    : ReaderBase{ j2534, carPlatform, ecuId, ranges }
+    : ReaderBase{ channelProvider, carPlatform, ecuId, ranges }
     , _canIdProvider{ common::createCanIdProviderForEcu(carPlatform, ecuId) }
 {
 }

@@ -1,7 +1,5 @@
 #include "flasher/KWPFlasher.hpp"
 
-#include <j2534/J2534.hpp>
-#include <j2534/J2534Channel.hpp>
 
 #include <common/protocols/KWPProtocolCommonSteps.hpp>
 #include <common/protocols/TP20RequestProcessor.hpp>
@@ -209,10 +207,10 @@ using M = hfsm2::MachineT<hfsm2::Config::ContextT<KWPFlasherImpl&>>;
         }
     };
 
-    KWPFlasher::KWPFlasher(j2534::J2534& j2534,
+    KWPFlasher::KWPFlasher(std::shared_ptr<common::ICanChannelProvider> channelProvider,
         common::CarPlatform carPlatform, uint32_t ecuId,
         KWPFlasherConfig&& config)
-        : FlasherBase{ j2534, carPlatform, ecuId }
+        : FlasherBase{ channelProvider, carPlatform, ecuId }
         , _config{ std::move(config) }
     {
     }
