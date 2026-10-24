@@ -46,6 +46,8 @@ namespace common {
     std::string fromPlatformString(const std::string& str);
 #endif
 
+    std::string getCarPlatformName(CarPlatform carPlatform);
+
     std::vector<j2534::DeviceInfo> getAvailableDevices();
 
     std::unique_ptr<j2534::J2534Channel>

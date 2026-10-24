@@ -602,7 +602,7 @@ namespace common {
         return common::CarPlatform::Undefined;
     }
 
-    static std::string getCarPlatformName(CarPlatform carPlatform)
+    std::string getCarPlatformName(CarPlatform carPlatform)
     {
         switch (carPlatform) {
         case CarPlatform::P80:
